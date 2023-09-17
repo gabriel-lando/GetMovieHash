@@ -1,5 +1,6 @@
 // https://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes
 
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,16 +28,21 @@ uint64_t compute_hash(FILE* handle)
 
 int main(int argc, char* argv[])
 {
-    FILE* handle;
-    uint64_t myhash;
+    std::string filename;
 
     if (argc != 2) 
     {
-        printf("Use \"%s <video_name.ext>\"!", argv[0]);
+        std::cout << "Tip: use \"" << argv[0] << " <video_name.ext>\"" << std::endl;
+        std::cout << "Enter file name: ";
+        std::cin >> filename;
         return 1;
     }
+    else {
+        filename = std::string(argv[1]);
+    }
 
-    auto result = fopen_s(&handle, (const char*)argv[1], "rb");
+    FILE* handle;
+    auto result = fopen_s(&handle, filename.c_str(), "rb");
 
     if (result)
     {
@@ -44,14 +50,16 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    myhash = compute_hash(handle);
-    printf("Movie Hash: %I64x\n\n", myhash);
-
-    printf("Access: https://www.opensubtitles.org/pb/search/sublanguageid-pob,por/moviehash-%I64x\n\n", myhash);
-
-
+    uint64_t videoHash = compute_hash(handle);
     fclose(handle);
+    
+    printf("Movie Hash: %I64x\n\n", videoHash);
 
-    //system("pause");
+    printf("Access: https://www.opensubtitles.org/pb/search/sublanguageid-pob,por/moviehash-%I64x\n\n", videoHash);
+
+
+
+    // Download URL: https://dl.opensubtitles.org/pb/download/sub/6240844
+
     return 0;
 }
